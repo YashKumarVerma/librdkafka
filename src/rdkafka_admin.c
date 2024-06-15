@@ -7270,7 +7270,7 @@ rd_kafka_admin_ListConsumerGroupsRequest(rd_kafka_broker_t *rkb,
                 }
         }
 
-        error = rd_kafka_ListGroupsRequest(rkb, -1, states_str, states_str_cnt,
+        error = rd_kafka_ListGroupsRequest(rkb, -1, states_str, states_str_cnt, NULL, 0,
                                            replyq, resp_cb, opaque);
 
         if (states_str) {
