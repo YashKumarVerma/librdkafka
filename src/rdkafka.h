@@ -5153,6 +5153,16 @@ typedef enum {
 } rd_kafka_consumer_group_state_t;
 
 /**
+ * @enum rd_kafka_consumer_group_type_t
+ *
+ * @brief Consumer group type.
+ */
+typedef enum {
+        RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN              = 0,
+        RD_KAFKA_CONSUMER_GROUP_TYPE__CNT
+} rd_kafka_consumer_group_type_t;
+
+/**
  * @brief Group information
  */
 struct rd_kafka_group_info {
