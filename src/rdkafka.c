@@ -4681,7 +4681,7 @@ rd_kafka_consumer_group_state_code(const char *name) {
 }
 
 static const char *rd_kafka_consumer_group_type_names[] = {
-    "Unknown"};
+    "Unknown", "Consumer", "Classic"};
 
 const char *
 rd_kafka_consumer_group_type_name(rd_kafka_consumer_group_type_t type) {

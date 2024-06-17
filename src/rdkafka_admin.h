@@ -108,6 +108,12 @@ struct rd_kafka_AdminOptions_s {
                                           *   to query for.
                                           *   Valid for: ListConsumerGroups.
                                           */
+        
+        rd_kafka_confval_t
+            match_consumer_group_types; /**< PTR: list of consumer group types
+                                          *   to query for.
+                                          *   Valid for: ListConsumerGroups.
+                                          */
 
         rd_kafka_confval_t
             isolation_level; /**< INT:Isolation Level needed for list Offset
