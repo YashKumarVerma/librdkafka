@@ -7245,6 +7245,11 @@ rd_kafka_consumer_group_state_t rd_kafka_ConsumerGroupListing_state(
         return grplist->state;
 }
 
+rd_kafka_consumer_group_type_t rd_kafka_ConsumerGroupListing_type(
+    const rd_kafka_ConsumerGroupListing_t *grplist) {
+        return grplist->group_type;
+}
+
 /**
  * @brief Create a new ListConsumerGroupsResult object.
  *

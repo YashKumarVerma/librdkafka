@@ -8557,6 +8557,17 @@ rd_kafka_consumer_group_state_t rd_kafka_ConsumerGroupListing_state(
     const rd_kafka_ConsumerGroupListing_t *grplist);
 
 /**
+ * @brief Gets group_type for the \p grplist group.
+ *
+ * @param grplist The group listing.
+ *
+ * @return A group type.
+ */
+RD_EXPORT
+rd_kafka_consumer_group_type_t rd_kafka_ConsumerGroupListing_type(
+    const rd_kafka_ConsumerGroupListing_t *grplist);
+
+/**
  * @brief Get an array of valid list groups from a ListConsumerGroups result.
  *
  * The returned groups life-time is the same as the \p result object.
