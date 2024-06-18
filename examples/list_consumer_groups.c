@@ -145,12 +145,15 @@ static int print_groups_info(const rd_kafka_ListConsumerGroups_result_t *list) {
                 int is_simple_consumer_group =
                     rd_kafka_ConsumerGroupListing_is_simple_consumer_group(
                         group);
+                rd_kafka_consumer_group_type_t group_type = 
+                    rd_kafka_ConsumerGroupListing_type(group);
 
                 printf("Group \"%s\", is simple %" PRId32
                        ", "
-                       "state %s",
+                       "state %s, type %s",
                        group_id, is_simple_consumer_group,
-                       rd_kafka_consumer_group_state_name(state));
+                       rd_kafka_consumer_group_state_name(state),
+                       rd_kafka_consumer_group_type_name(group_type));
                 printf("\n");
         }
         for (i = 0; i < result_error_cnt; i++) {

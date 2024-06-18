@@ -4690,7 +4690,7 @@ rd_kafka_consumer_group_type_name(rd_kafka_consumer_group_type_t type) {
         return rd_kafka_consumer_group_type_names[type];
 }
 
-rd_kafka_consumer_group_state_t
+rd_kafka_consumer_group_type_t
 rd_kafka_consumer_group_type_code(const char *name) {
         size_t i;
         for (i = 0; i < RD_KAFKA_CONSUMER_GROUP_TYPE__CNT; i++) {

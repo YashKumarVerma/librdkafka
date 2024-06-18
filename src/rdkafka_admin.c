@@ -1649,7 +1649,7 @@ rd_kafka_error_t *rd_kafka_AdminOptions_set_match_consumer_group_states(
 
 rd_kafka_error_t *rd_kafka_AdminOptions_set_match_consumer_group_types(
     rd_kafka_AdminOptions_t *options,
-    const rd_kafka_consumer_group_state_t *consumer_group_types,
+    const rd_kafka_consumer_group_type_t *consumer_group_types,
     size_t consumer_group_types_cnt) {
         size_t i;
         char errstr[512];
@@ -1664,25 +1664,25 @@ rd_kafka_error_t *rd_kafka_AdminOptions_set_match_consumer_group_types(
 
         for (i = 0; i < consumer_group_types_cnt; i++) {
                 uint64_t state_bit;
-                rd_kafka_consumer_group_state_t state =
+                rd_kafka_consumer_group_type_t group_type =
                     consumer_group_types[i];
 
-                if (state < 0 || state >= RD_KAFKA_CONSUMER_GROUP_TYPE__CNT) {
+                if (group_type < 0 || group_type >= RD_KAFKA_CONSUMER_GROUP_TYPE__CNT) {
                         rd_list_destroy(types_list);
                         return rd_kafka_error_new(
                             RD_KAFKA_RESP_ERR__INVALID_ARG,
                             "Invalid group type value");
                 }
 
-                state_bit = 1 << state;
+                state_bit = 1 << group_type;
                 if (states_bitmask & state_bit) {
                         rd_list_destroy(types_list);
                         return rd_kafka_error_new(
                             RD_KAFKA_RESP_ERR__INVALID_ARG,
-                            "Duplicate types not allowed");
+                            "Duplicate group types not allowed");
                 } else {
                         states_bitmask = states_bitmask | state_bit;
-                        rd_list_set_int32(types_list, (int32_t)i, state);
+                        rd_list_set_int32(types_list, (int32_t)i, group_type);
                 }
         }
         err = rd_kafka_confval_set_type(&options->match_consumer_group_types,
@@ -7189,12 +7189,14 @@ const rd_kafka_group_result_t **rd_kafka_ListConsumerGroupOffsets_result_groups(
 static rd_kafka_ConsumerGroupListing_t *
 rd_kafka_ConsumerGroupListing_new(const char *group_id,
                                   rd_bool_t is_simple_consumer_group,
-                                  rd_kafka_consumer_group_state_t state) {
+                                  rd_kafka_consumer_group_state_t state,
+                                  rd_kafka_consumer_group_type_t group_type) {
         rd_kafka_ConsumerGroupListing_t *grplist;
         grplist                           = rd_calloc(1, sizeof(*grplist));
         grplist->group_id                 = rd_strdup(group_id);
         grplist->is_simple_consumer_group = is_simple_consumer_group;
         grplist->state                    = state;
+        grplist->group_type               = group_type;
         return grplist;
 }
 
@@ -7208,7 +7210,7 @@ static rd_kafka_ConsumerGroupListing_t *rd_kafka_ConsumerGroupListing_copy(
     const rd_kafka_ConsumerGroupListing_t *grplist) {
         return rd_kafka_ConsumerGroupListing_new(
             grplist->group_id, grplist->is_simple_consumer_group,
-            grplist->state);
+            grplist->state, grplist->group_type);
 }
 
 /**
@@ -7354,6 +7356,10 @@ rd_kafka_admin_ListConsumerGroupsRequest(rd_kafka_broker_t *rkb,
                 rd_free(states_str);
         }
 
+        if (types_str) {
+                rd_free(types_str);
+        }
+
         if (error) {
                 rd_snprintf(errstr, errstr_size, "%s",
                             rd_kafka_error_string(error));
@@ -7382,7 +7388,7 @@ rd_kafka_ListConsumerGroupsResponse_parse(rd_kafka_op_t *rko_req,
         rd_kafka_broker_t *rkb    = reply->rkbuf_rkb;
         rd_list_t valid, errors;
         rd_kafka_ListConsumerGroupsResult_t *list_result;
-        char *group_id = NULL, *group_state = NULL, *proto_type = NULL;
+        char *group_id = NULL, *group_state = NULL, *proto_type = NULL, *group_type_name = NULL;
 
         api_version = rd_kafka_buf_ApiVersion(reply);
         if (api_version >= 1) {
@@ -7410,16 +7416,21 @@ rd_kafka_ListConsumerGroupsResponse_parse(rd_kafka_op_t *rko_req,
 
         for (i = 0; i < cnt; i++) {
                 rd_kafkap_str_t GroupId, ProtocolType,
-                    GroupState = RD_ZERO_INIT;
+                    GroupState, GroupType = RD_ZERO_INIT;
                 rd_kafka_ConsumerGroupListing_t *group_listing;
                 rd_bool_t is_simple_consumer_group, is_consumer_protocol_type;
                 rd_kafka_consumer_group_state_t state =
                     RD_KAFKA_CONSUMER_GROUP_STATE_UNKNOWN;
+                rd_kafka_consumer_group_type_t group_type =
+                     RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN;
 
                 rd_kafka_buf_read_str(reply, &GroupId);
                 rd_kafka_buf_read_str(reply, &ProtocolType);
                 if (api_version >= 4) {
                         rd_kafka_buf_read_str(reply, &GroupState);
+                }
+                if (api_version >= 5) {
+                        rd_kafka_buf_read_str(reply, &GroupType);
                 }
                 rd_kafka_buf_skip_tags(reply);
 
@@ -7430,12 +7441,17 @@ rd_kafka_ListConsumerGroupsResponse_parse(rd_kafka_op_t *rko_req,
                         state = rd_kafka_consumer_group_state_code(group_state);
                 }
 
+                if (api_version >= 5) {
+                        group_type_name = RD_KAFKAP_STR_DUP(&GroupType);
+                        group_type = rd_kafka_consumer_group_type_code(group_type_name);
+                }
+
                 is_simple_consumer_group = *proto_type == '\0';
                 is_consumer_protocol_type =
                     !strcmp(proto_type, CONSUMER_PROTOCOL_TYPE);
                 if (is_simple_consumer_group || is_consumer_protocol_type) {
                         group_listing = rd_kafka_ConsumerGroupListing_new(
-                            group_id, is_simple_consumer_group, state);
+                            group_id, is_simple_consumer_group, state, group_type);
                         rd_list_add(&valid, group_listing);
                 }
 

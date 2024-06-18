@@ -5249,6 +5249,28 @@ rd_kafka_consumer_group_state_t
 rd_kafka_consumer_group_state_code(const char *name);
 
 /**
+ * @brief Returns a name for a group type code.
+ *
+ * @param type The group type value.
+ *
+ * @return The group type name corresponding to the provided group type value.
+ */
+RD_EXPORT
+const char *
+rd_kafka_consumer_group_type_name(rd_kafka_consumer_group_type_t type);
+
+/**
+ * @brief Returns a code for a group type name.
+ *
+ * @param name The group type name.
+ *
+ * @return The group type value corresponding to the provided group type name.
+ */
+RD_EXPORT
+rd_kafka_consumer_group_type_t
+rd_kafka_consumer_group_type_code(const char *name);
+
+/**
  * @brief Release list memory
  */
 RD_EXPORT
@@ -7229,7 +7251,7 @@ rd_kafka_error_t *rd_kafka_AdminOptions_set_match_consumer_group_states(
 RD_EXPORT
 rd_kafka_error_t *rd_kafka_AdminOptions_set_match_consumer_group_types(
     rd_kafka_AdminOptions_t *options,
-    const rd_kafka_consumer_group_state_t *consumer_group_types,
+    const rd_kafka_consumer_group_type_t *consumer_group_types,
     size_t consumer_group_types_cnt);
 
 /**
