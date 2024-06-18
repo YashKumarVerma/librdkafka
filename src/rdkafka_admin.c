@@ -7458,9 +7458,11 @@ rd_kafka_ListConsumerGroupsResponse_parse(rd_kafka_op_t *rko_req,
                 rd_free(group_id);
                 rd_free(group_state);
                 rd_free(proto_type);
+                rd_free(group_type_name);
                 group_id    = NULL;
                 group_state = NULL;
                 proto_type  = NULL;
+                group_type_name = NULL;
         }
         rd_kafka_buf_skip_tags(reply);
 
@@ -7471,6 +7473,8 @@ err_parse:
                 rd_free(group_state);
         if (proto_type)
                 rd_free(proto_type);
+        if (group_type_name)
+                rd_free(group_type_name);
 
         if (reply->rkbuf_err) {
                 error_code = reply->rkbuf_err;
