@@ -1667,11 +1667,11 @@ rd_kafka_error_t *rd_kafka_AdminOptions_set_match_consumer_group_types(
                 rd_kafka_consumer_group_type_t group_type =
                     consumer_group_types[i];
 
-                if (group_type < 0 || group_type >= RD_KAFKA_CONSUMER_GROUP_TYPE__CNT) {
+                if (group_type <= RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN || group_type >= RD_KAFKA_CONSUMER_GROUP_TYPE__CNT) {
                         rd_list_destroy(types_list);
                         return rd_kafka_error_new(
                             RD_KAFKA_RESP_ERR__INVALID_ARG,
-                            "Invalid group type value");
+                            "Only a valid group type should be provided except Unknwon Group Type");
                 }
 
                 state_bit = 1 << group_type;
@@ -1685,6 +1685,7 @@ rd_kafka_error_t *rd_kafka_AdminOptions_set_match_consumer_group_types(
                         rd_list_set_int32(types_list, (int32_t)i, group_type);
                 }
         }
+        
         err = rd_kafka_confval_set_type(&options->match_consumer_group_types,
                                         RD_KAFKA_CONFVAL_PTR, types_list,
                                         errstr, sizeof(errstr));
@@ -1800,6 +1801,16 @@ static void rd_kafka_AdminOptions_copy_to(rd_kafka_AdminOptions_t *dst,
                 rd_kafka_resp_err_t err = rd_kafka_confval_set_type(
                     &dst->match_consumer_group_states, RD_KAFKA_CONFVAL_PTR,
                     states_list_copy, errstr, sizeof(errstr));
+                rd_assert(!err);
+        }
+        if (src->match_consumer_group_types.u.PTR) {
+                char errstr[512];
+                rd_list_t *group_types_list_copy = rd_list_copy_preallocated(
+                    src->match_consumer_group_types.u.PTR, NULL);
+
+                rd_kafka_resp_err_t err = rd_kafka_confval_set_type(
+                    &dst->match_consumer_group_types, RD_KAFKA_CONFVAL_PTR,
+                    group_types_list_copy, errstr, sizeof(errstr));
                 rd_assert(!err);
         }
 }

@@ -187,7 +187,6 @@ int64_t parse_int(const char *what, const char *str) {
 static void
 cmd_list_consumer_groups(rd_kafka_conf_t *conf, int argc, char **argv) {
         rd_kafka_t *rk;
-        const char **states_str = NULL;
         char errstr[512];
         rd_kafka_AdminOptions_t *options;
         rd_kafka_event_t *event = NULL;
@@ -195,16 +194,21 @@ cmd_list_consumer_groups(rd_kafka_conf_t *conf, int argc, char **argv) {
         int i;
         int retval     = 0;
         int states_cnt = 0;
+        int group_types_cnt = 0;
         rd_kafka_consumer_group_state_t *states;
+        rd_kafka_consumer_group_type_t *group_types;
 
+        states_cnt = parse_int("state count", argv[0]);
 
-        if (argc >= 1) {
-                states_str = (const char **)&argv[0];
-                states_cnt = argc;
-        }
         states = calloc(states_cnt, sizeof(rd_kafka_consumer_group_state_t));
         for (i = 0; i < states_cnt; i++) {
-                states[i] = parse_int("state code", states_str[i]);
+                states[i] = parse_int("state code", argv[i + 1]);
+        }
+        group_types_cnt = parse_int("group type count", argv[states_cnt+1]);
+
+        group_types = calloc(group_types_cnt, sizeof(rd_kafka_consumer_group_type_t));
+        for (i = 0; i < group_types_cnt; i++) {
+                group_types[i] = parse_int("group type code", argv[i+states_cnt+2]);
         }
 
         /*
@@ -242,6 +246,15 @@ cmd_list_consumer_groups(rd_kafka_conf_t *conf, int argc, char **argv) {
                 goto exit;
         }
         free(states);
+        if ((error = rd_kafka_AdminOptions_set_match_consumer_group_types(
+                 options, group_types, group_types_cnt))) {
+                fprintf(stderr, "%% Failed to set group types: %s\n",
+                        rd_kafka_error_string(error));
+                rd_kafka_error_destroy(error);
+                goto exit;
+        }
+        free(group_types);
+        
 
         rd_kafka_ListConsumerGroups(rk, options, queue);
         rd_kafka_AdminOptions_destroy(options);

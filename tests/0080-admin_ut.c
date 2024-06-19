@@ -533,7 +533,9 @@ static void do_test_ListConsumerGroups(const char *what,
                     RD_KAFKA_CONSUMER_GROUP_STATE_EMPTY,
                     RD_KAFKA_CONSUMER_GROUP_STATE_EMPTY};
                 rd_kafka_consumer_group_type_t duplicate_types[2] = {
-                        RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN,
+                        RD_KAFKA_CONSUMER_GROUP_TYPE_CLASSIC,
+                        RD_KAFKA_CONSUMER_GROUP_TYPE_CLASSIC};
+                rd_kafka_consumer_group_type_t unknown_type[1] = {
                         RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN};
 
                 options = rd_kafka_AdminOptions_new(
@@ -554,6 +556,15 @@ static void do_test_ListConsumerGroups(const char *what,
                         options, duplicate_types, 2);
                 TEST_ASSERT(error && rd_kafka_error_code(error), "%s",
                             "Expected error on duplicate group types,"
+                            " got no error");
+                rd_kafka_error_destroy(error);
+
+                /* Test invalid args error on setting UNKNOWN group type in match group types */
+                error =
+                    rd_kafka_AdminOptions_set_match_consumer_group_types(
+                        options, unknown_type, 1);
+                TEST_ASSERT(error && rd_kafka_error_code(error), "%s",
+                            "Expected error on Unknown group type,"
                             " got no error");
                 rd_kafka_error_destroy(error);
 
