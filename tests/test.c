@@ -2764,8 +2764,10 @@ int64_t test_consume_msgs(const char *what,
  *                  single partition will be assigned immediately.
  *
  * If \p group_id is NULL a new unique group is generated
+ * If \p group_type is UNKNOWN no conf property (group.protocol) will be set to be used by the broker.
  */
-void test_consume_msgs_easy_mv0(const char *group_id,
+void test_consume_msgs_easy_mv0(rd_kafka_consumer_group_type_t group_type,
+                                const char *group_id,
                                 const char *topic,
                                 rd_bool_t txn,
                                 int32_t partition,
@@ -2789,6 +2791,17 @@ void test_consume_msgs_easy_mv0(const char *group_id,
         test_topic_conf_set(tconf, "auto.offset.reset", "smallest");
         if (exp_eofcnt != -1)
                 test_conf_set(conf, "enable.partition.eof", "true");
+
+        if (group_type != RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN) {
+                switch (group_type) {
+                        case RD_KAFKA_CONSUMER_GROUP_TYPE_CLASSIC: 
+                                test_conf_set(conf, "group.protocol", "classic");
+                        case RD_KAFKA_CONSUMER_GROUP_TYPE_CONSUMER:
+                                test_conf_set(conf, "group.protocol", "consumer");
+                        default :
+                                break;
+                }
+        }
         rk = test_create_consumer(group_id, NULL, conf, tconf);
 
         rd_kafka_poll_set_consumer(rk);
@@ -2823,7 +2836,7 @@ void test_consume_msgs_easy_mv0(const char *group_id,
         rd_kafka_destroy(rk);
 }
 
-void test_consume_msgs_easy(const char *group_id,
+void test_consume_msgs_easy(rd_kafka_consumer_group_type_t group_type, const char *group_id,
                             const char *topic,
                             uint64_t testid,
                             int exp_eofcnt,
@@ -2833,7 +2846,7 @@ void test_consume_msgs_easy(const char *group_id,
 
         test_msgver_init(&mv, testid);
 
-        test_consume_msgs_easy_mv(group_id, topic, -1, testid, exp_eofcnt,
+        test_consume_msgs_easy_mv(group_type, group_id, topic, -1, testid, exp_eofcnt,
                                   exp_msgcnt, tconf, &mv);
 
         test_msgver_clear(&mv);
@@ -2850,7 +2863,7 @@ void test_consume_txn_msgs_easy(const char *group_id,
 
         test_msgver_init(&mv, testid);
 
-        test_consume_msgs_easy_mv0(group_id, topic, rd_true /*txn*/, -1, testid,
+        test_consume_msgs_easy_mv0(RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN, group_id, topic, rd_true /*txn*/, -1, testid,
                                    exp_eofcnt, exp_msgcnt, tconf, &mv);
 
         test_msgver_clear(&mv);

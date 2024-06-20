@@ -73,7 +73,7 @@ void do_test_flush_overrides_linger_ms_time() {
 
 
         /* Verify messages were actually produced by consuming them back. */
-        test_consume_msgs_easy(topic, topic, 0, 1, msgcnt, NULL);
+        test_consume_msgs_easy(RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN, topic, topic, 0, 1, msgcnt, NULL);
 }
 
 /**

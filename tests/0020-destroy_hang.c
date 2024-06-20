@@ -70,7 +70,7 @@ static int nonexist_part(void) {
                          group_id);
 
                 /* Consume messages */
-                test_consume_msgs_easy(group_id, topic, testid, -1, msgcnt,
+                test_consume_msgs_easy(RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN, group_id, topic, testid, -1, msgcnt,
                                        NULL);
 
                 /*

@@ -197,7 +197,7 @@ static void do_test_produce_timeout(const char *topic, const int msgrate) {
                  counters.dr_ok);
 
         test_msgver_init(&mv, testid);
-        test_consume_msgs_easy_mv(NULL, topic, partition, testid, 1, -1, NULL,
+        test_consume_msgs_easy_mv(RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN, NULL, topic, partition, testid, 1, -1, NULL,
                                   &mv);
         test_msgver_verify_compare("delivered", &mv, &counters.mv_delivered,
                                    TEST_MSGVER_ORDER | TEST_MSGVER_DUP |

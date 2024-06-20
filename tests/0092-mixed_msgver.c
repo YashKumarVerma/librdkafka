@@ -91,7 +91,7 @@ int main_0092_mixed_msgver(int argc, char **argv) {
         rd_kafka_destroy(rk);
 
         /* Consume messages */
-        test_consume_msgs_easy(NULL, topic, testid, -1, msgcnt, NULL);
+        test_consume_msgs_easy(RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN, NULL, topic, testid, -1, msgcnt, NULL);
 
         return 0;
 }

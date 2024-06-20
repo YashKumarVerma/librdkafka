@@ -146,7 +146,7 @@ static void do_test_implicit_ack(const char *what,
 
         TEST_SAY("Verifying messages with consumer\n");
         test_msgver_init(&mv, testid);
-        test_consume_msgs_easy_mv(NULL, topic, partition, testid, 1, msgcnt,
+        test_consume_msgs_easy_mv(RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN, NULL, topic, partition, testid, 1, msgcnt,
                                   NULL, &mv);
         test_msgver_verify("verify", &mv, TEST_MSGVER_ALL, 0, msgcnt);
         test_msgver_clear(&mv);

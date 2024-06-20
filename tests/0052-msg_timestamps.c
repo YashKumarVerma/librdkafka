@@ -119,7 +119,7 @@ consume_msgs_verify_timestamps(const char *topic,
         test_msgver_t mv;
 
         test_msgver_init(&mv, testid);
-        test_consume_msgs_easy_mv(topic, topic, -1, testid, -1, msgcnt, NULL,
+        test_consume_msgs_easy_mv(RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN, topic, topic, -1, testid, -1, msgcnt, NULL,
                                   &mv);
 
         test_msgver_verify0(

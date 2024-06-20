@@ -592,7 +592,8 @@ void test_verify_rkmessage0(const char *func,
 
 void test_consumer_subscribe(rd_kafka_t *rk, const char *topic);
 
-void test_consume_msgs_easy_mv0(const char *group_id,
+void test_consume_msgs_easy_mv0(rd_kafka_consumer_group_type_t group_type,
+                                const char *group_id,
                                 const char *topic,
                                 rd_bool_t txn,
                                 int32_t partition,
@@ -602,13 +603,13 @@ void test_consume_msgs_easy_mv0(const char *group_id,
                                 rd_kafka_topic_conf_t *tconf,
                                 test_msgver_t *mv);
 
-#define test_consume_msgs_easy_mv(group_id, topic, partition, testid,          \
+#define test_consume_msgs_easy_mv(group_type, group_id, topic, partition, testid,          \
                                   exp_eofcnt, exp_msgcnt, tconf, mv)           \
-        test_consume_msgs_easy_mv0(group_id, topic, rd_false /*not-txn*/,      \
+        test_consume_msgs_easy_mv0(group_type, group_id, topic, rd_false /*not-txn*/,      \
                                    partition, testid, exp_eofcnt, exp_msgcnt,  \
                                    tconf, mv)
 
-void test_consume_msgs_easy(const char *group_id,
+void test_consume_msgs_easy(rd_kafka_consumer_group_type_t group_type, const char *group_id,
                             const char *topic,
                             uint64_t testid,
                             int exp_eofcnt,

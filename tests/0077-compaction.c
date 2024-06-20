@@ -308,7 +308,7 @@ static void do_test_compaction(int msgs_per_key, const char *compression) {
          * last message for each of k1, k2, k3, all messages for unkeyed. */
         test_msgver_init(&mv, testid);
         mv.msgid_hdr = "rdk_msgid";
-        test_consume_msgs_easy_mv(NULL, topic, -1, testid, 1, -1, NULL, &mv);
+        test_consume_msgs_easy_mv(RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN, NULL, topic, -1, testid, 1, -1, NULL, &mv);
         test_msgver_verify_compare("post-compaction", &mv, &mv_correct,
                                    TEST_MSGVER_BY_MSGID |
                                        TEST_MSGVER_BY_OFFSET);

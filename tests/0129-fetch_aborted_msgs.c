@@ -72,7 +72,7 @@ int main_0129_fetch_aborted_msgs(int argc, char **argv) {
         rd_kafka_destroy(rk);
 
         /* Verify messages were actually produced by consuming them back. */
-        test_consume_msgs_easy(topic, topic, 0, 1, 0, NULL);
+        test_consume_msgs_easy(RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN, topic, topic, 0, 1, 0, NULL);
 
         return 0;
 }

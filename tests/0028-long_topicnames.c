@@ -73,7 +73,7 @@ int main_0028_long_topicnames(int argc, char **argv) {
             test_produce_msgs_easy(topic, 0, RD_KAFKA_PARTITION_UA, msgcnt);
 
         /* Consume messages */
-        test_consume_msgs_easy(NULL, topic, testid, -1, msgcnt, NULL);
+        test_consume_msgs_easy(RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN, NULL, topic, testid, -1, msgcnt, NULL);
 
         return 0;
 }

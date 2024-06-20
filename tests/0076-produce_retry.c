@@ -153,7 +153,7 @@ static void do_test_produce_retries(const char *topic,
 
         if (!should_fail) {
                 TEST_SAY("Verifying messages with consumer\n");
-                test_consume_msgs_easy(NULL, topic, testid, -1, msgcnt, NULL);
+                test_consume_msgs_easy(RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN, NULL, topic, testid, -1, msgcnt, NULL);
         }
 
         sockem_ctrl_term(&ctrl);
@@ -306,7 +306,7 @@ static void do_test_produce_retries_disconnect(const char *topic,
         rd_kafka_destroy(rk);
 
         TEST_SAY("Verifying messages with consumer\n");
-        test_consume_msgs_easy(NULL, topic, testid, partition_cnt,
+        test_consume_msgs_easy(RD_KAFKA_CONSUMER_GROUP_TYPE_UNKNOWN, NULL, topic, testid, partition_cnt,
                                /* Since we don't know the number of
                                 * messages that got thru on the socket
                                 * before disconnect we can't let the
