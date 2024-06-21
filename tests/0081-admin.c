@@ -2666,7 +2666,7 @@ static void do_test_ListConsumerGroups(const char *what,
         const rd_kafka_ConsumerGroupListing_t **groups;
         rd_bool_t has_match_states =
             test_broker_version >= TEST_BRKVER(2, 7, 0, 0);
-        rd_bool_t has_match_types = rd_false;/*test_broker_version >= TEST_BRKVER(2, 7, 0, 0);*/
+        rd_bool_t has_match_types = test_broker_version >= TEST_BRKVER(3, 7, 0, 0);
         
 
         SUB_TEST_QUICK(
